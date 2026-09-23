@@ -24,9 +24,14 @@ It's Phase 1 of the Universal OS architecture: one system that runs **Linux**, *
 2. Write the ISO to a USB stick (8 GB+) with [Fedora Media Writer](https://fedoraproject.org/workstation/download),
    [Rufus](https://rufus.ie) (choose **DD image** mode) or [Ventoy](https://www.ventoy.net).
 3. Boot the PC from the USB stick (usually F12, F11, Esc or F8 at power-on).
-4. The installer asks for language, disk, time zone and your user account, then installs.
+4. The installer asks for language, disk and time zone, then installs.
    **Installing erases the disk you pick.** To keep Windows, shrink its partition first and choose the free space.
-5. Reboot, log in, and you're in Universal OS.
+5. Reboot. Before the desktop opens, the **setup wizard** asks you to create your account
+   (name, username, password). Universal OS can't be used without one, and the login screen asks for it every time.
+6. On your first login, **Welcome** opens and offers to:
+   - **Sign in with Google**, which adds Google Drive to the Files app under *Network*
+   - install **Google Chrome**
+   - set up the **Google Play Store** for Android apps
 
 To try it without touching your PC, create a VM in VirtualBox or virt-manager
 (UEFI on, 4 GB+ RAM, 40 GB+ disk) and boot the ISO. In Hyper-V, use a Generation 2 VM and set Secure Boot's template
@@ -46,7 +51,9 @@ To go back: `sudo bootc rollback` and reboot.
 
 | To… | Do this |
 |---|---|
+| Connect Google again | Open **Welcome** from the launcher, or System Settings → **Online Accounts** |
 | Run Android apps | Open **Set Up Android Runtime** once (downloads ~1 GB), then double-click any `.apk` |
+| Android with Google Play | `universal-android-setup --gapps`, then register the device ID it shows at google.com/android/uncertified (Google requires this for custom Android devices) |
 | Run a Windows program | Double-click the `.exe`/`.msi`, or `universal-open setup.exe` |
 | See all runtimes | Open **Runtimes** in the dock, or run `universal-runtimes` |
 | Touch / desktop behaviour | `universal-mode touch`, `universal-mode desktop`, `universal-mode auto` |
@@ -96,6 +103,8 @@ disk_config/iso.toml          installer settings
 ## Current limits
 
 - **PCs only (x86_64).** Phones need a separate port for each device. The planned route is postmarketOS with Plasma Mobile on devices it supports well (for example OnePlus 6/6T).
+- **Google account:** your Universal OS login is a local account. Google is connected after login (like on Linux or macOS), not used as the login itself.
+  Google Drive access uses KDE's Google sign-in. If Google ever blocks it, use Drive in Chrome instead.
 - **Android:** apps that require Google Play Integrity (banking, some games) won't run. ARM-only apps need an ARM translation layer, which isn't included.
 - **Windows:** games with kernel anti-cheat, and drivers, don't run. For games, install Steam from Discover and use Proton.
 - **macOS/iOS apps** aren't supported.

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Universal OS Welcome
+Exec=universal-welcome
+Icon=universal-logo
+NoDisplay=true
+X-KDE-autostart-phase=2

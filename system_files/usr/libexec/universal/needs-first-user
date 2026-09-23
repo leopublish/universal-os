@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+# Exit 0 (run the wizard) when no regular user account exists; exit 1 otherwise.
+if getent passwd | awk -F: '$3 >= 1000 && $3 < 60000 { found = 1 } END { exit !found }'; then
+    exit 1
+fi
+exit 0

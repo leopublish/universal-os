@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Welcome
+GenericName=Universal OS setup
+Comment=Sign in with Google and install Google apps
+Exec=universal-welcome --force
+Icon=universal-logo
+Terminal=false
+Categories=System;Settings;
+Keywords=google;account;chrome;play;setup;welcome;

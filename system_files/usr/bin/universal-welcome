@@ -1,0 +1,53 @@
+#!/usr/bin/bash
+# universal-welcome — first-login setup for Universal OS.
+#   1. Sign in with Google (KDE Online Accounts: Google Drive in Files)
+#   2. Install Google apps: Chrome, and Google Play for Android apps
+# Runs automatically once per user; run `universal-welcome --force` to repeat.
+set -uo pipefail
+
+marker="${XDG_CONFIG_HOME:-$HOME/.config}/universal/welcome-done"
+[ "${1:-}" = "--force" ] || [ ! -e "$marker" ] || exit 0
+mkdir -p "$(dirname "$marker")"
+T="Welcome to Universal OS"
+finish() { touch "$marker"; exit 0; }
+name=$(getent passwd "$USER" | cut -d: -f5 | cut -d, -f1)
+
+kdialog --title "$T" --yes-label "Continue" --no-label "Skip setup" --yesno \
+"<h2>Welcome, ${name:-$USER}</h2>
+<p>Let's connect your Google account and set up Google apps.</p>
+<p>You can run this again any time: open <b>Welcome</b> in the app launcher.</p>" || finish
+
+# --- 1. Google account --------------------------------------------------------
+if kdialog --title "$T" --yes-label "Sign in with Google" --no-label "Not now" --yesno \
+"<h3>Google account</h3>
+<p>Sign in once to see <b>Google Drive</b> in the Files app (under <i>Network</i>).</p>
+<p>In the window that opens, click <b>Add New Account…</b>, choose <b>Google</b>, and sign in.
+Google's own page handles your password and 2-step verification.</p>"; then
+    systemsettings kcm_kaccounts
+fi
+
+# --- 2. Google apps ---------------------------------------------------------------
+choice=$(kdialog --title "$T" --separate-output --checklist \
+"<h3>Google apps</h3><p>Choose what to install:</p>" \
+    chrome    "Google Chrome browser (from Flathub)"                          on \
+    playstore "Google Play Store for Android apps (downloads about 1 GB)"     off) || choice=""
+
+steps=""
+if grep -qx chrome <<<"$choice"; then
+    steps+='echo "== Installing Google Chrome =="; flatpak install -y --noninteractive flathub com.google.Chrome || echo "Chrome could not be installed."; echo; '
+fi
+if grep -qx playstore <<<"$choice"; then
+    steps+='universal-android-setup --gapps --no-wait; '
+fi
+if [ -n "$steps" ]; then
+    konsole --hide-menubar -e bash -c "$steps"'read -rp "Press Enter to close…" _'
+fi
+
+kdialog --title "$T" --msgbox \
+"<h3>You're all set</h3>
+<ul>
+<li>Google Drive: <b>Files → Network → Google Drive</b></li>
+<li>Android apps: double-click any <b>.apk</b>, or use the Play Store</li>
+<li>Windows programs: double-click any <b>.exe</b></li>
+</ul>"
+finish

@@ -10,7 +10,19 @@ dnf5 install -y \
     winetricks \
     kdialog \
     librsvg2-tools \
-    file
+    file \
+    sqlite
+
+# First-boot setup wizard (creates the user account before the desktop starts)
+dnf5 install -y \
+    initial-setup \
+    initial-setup-gui \
+    initial-setup-gui-wayland-plasma
+
+# Google account integration: KDE Online Accounts + Google Drive in Dolphin
+dnf5 install -y \
+    kaccounts-providers \
+    kio-gdrive
 
 # Nice to have: skipped quietly if a Fedora release drops or renames them.
 dnf5 install -y --skip-unavailable \
@@ -23,6 +35,9 @@ dnf5 install -y --skip-unavailable \
 # Android runtime container manager (the Android system itself is downloaded
 # on first use by `universal-android-setup`, it is ~1 GB).
 systemctl enable waydroid-container.service
+# First-boot account wizard. A drop-in (system_files) limits it to machines
+# that have no user account yet, so switching an existing system skips it.
+systemctl enable initial-setup.service
 
 ### 3. Branding: render SVG sources to the bitmaps Plasma expects ##############
 BRAND=/usr/share/universal/branding
@@ -51,7 +66,7 @@ grep -q '^LOGO=' /usr/lib/os-release || echo 'LOGO=universal-logo' >> /usr/lib/o
 grep -q '^IMAGE_NAME=' /usr/lib/os-release || echo 'IMAGE_NAME="universal-os"' >> /usr/lib/os-release
 
 ### 5. Permissions on our tools ################################################
-chmod 0755 /usr/bin/universal-*
+chmod 0755 /usr/bin/universal-* /usr/libexec/universal/*
 
 ### 6. Make .apk and Windows programs open with the runtime dispatcher #######
 update-desktop-database /usr/share/applications || true

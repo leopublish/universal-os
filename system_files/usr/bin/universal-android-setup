@@ -1,25 +1,79 @@
 #!/usr/bin/bash
-# universal-android-setup — one-time setup of the Universal OS Android runtime.
-# Downloads a LineageOS-based Android system (about 1 GB) for Waydroid.
-#   universal-android-setup           plain Android (no Google apps)
-#   universal-android-setup --gapps   Android with Google apps
+# universal-android-setup — set up the Universal OS Android runtime (Waydroid).
+#   universal-android-setup             plain Android, no Google apps (~1 GB download)
+#   universal-android-setup --gapps     Android with Google Play Store
+#   universal-android-setup --register  show the ID for registering Google Play
+# Add --no-wait to skip the final "Press Enter" prompt.
 set -euo pipefail
 
-type=VANILLA
-[ "${1:-}" = "--gapps" ] && type=GAPPS
+type=VANILLA; register=0; wait=1
+for a in "$@"; do
+    case "$a" in
+        --gapps)    type=GAPPS ;;
+        --register) register=1 ;;
+        --no-wait)  wait=0 ;;
+        *) echo "usage: universal-android-setup [--gapps] [--register] [--no-wait]"; exit 2 ;;
+    esac
+done
+pause() { if [ "$wait" = 1 ] && [ -t 0 ]; then read -rp "Press Enter to close…" _; fi; }
+cfg=/var/lib/waydroid/waydroid.cfg
+has_gapps() { [ -f "$cfg" ] && grep -qi 'gapps' "$cfg"; }
 
-if [ -f /var/lib/waydroid/waydroid.cfg ]; then
+session_up() {
+    if ! waydroid status 2>/dev/null | grep -Eq 'Session:[[:space:]]+RUNNING'; then
+        echo "Starting the Android runtime…"
+        (waydroid session start >/dev/null 2>&1 &)
+        for _ in $(seq 1 120); do
+            waydroid status 2>/dev/null | grep -Eq 'Session:[[:space:]]+RUNNING' && return 0
+            sleep 1
+        done
+        echo "The Android runtime didn't start. Try: waydroid session start"; return 1
+    fi
+}
+
+google_register() {
+    session_up || return 1
+    echo "Waiting for Google services to create this device's ID…"
+    # Android's data directory is visible from Linux, so read the ID with the host's sqlite3.
+    db="$HOME/.local/share/waydroid/data/data/com.google.android.gsf/databases/gservices.db"
+    q="select value from main where name='android_id';"
+    id=""
+    for _ in $(seq 1 60); do
+        id=$(sudo sqlite3 -readonly "$db" "$q" 2>/dev/null | tr -dc '0-9' || true)
+        [ -n "$id" ] && break
+        sleep 2
+    done
+    if [ -z "$id" ]; then
+        echo "No ID yet. Open the Play Store once, then run: universal-android-setup --register"; return 1
+    fi
+    echo
+    echo "Google requires custom Android devices to be registered before Play Store sign-in works:"
+    echo "  1. Open https://www.google.com/android/uncertified  (sign in with your Google account)"
+    echo "  2. Enter this ID:  $id"
+    echo "  3. Wait a few minutes, then restart Android:  waydroid session stop"
+    command -v wl-copy >/dev/null && printf %s "$id" | wl-copy && echo "(The ID is copied to your clipboard.)"
+    xdg-open "https://www.google.com/android/uncertified" >/dev/null 2>&1 || true
+}
+
+echo "== Universal OS · Android runtime =="
+if [ "$register" = 1 ]; then google_register; pause; exit; fi
+
+if [ -f "$cfg" ] && { [ "$type" = VANILLA ] || has_gapps; }; then
     echo "The Android runtime is already set up."
-    echo "Start it with:   waydroid session start"
-    echo "Reset it with:   sudo waydroid init -f -s $type"
+elif [ -f "$cfg" ]; then
+    echo "Switching the Android runtime to the Google Play edition (your Android apps will be reset)…"
+    sudo waydroid session stop 2>/dev/null || true
+    sudo waydroid init -f -s GAPPS
 else
-    echo "== Universal OS · Android runtime setup =="
-    echo "This downloads the Android system image (~1 GB). Your password is needed once."
-    echo
+    echo "Downloading the Android system (~1 GB). Your password is needed once."
     sudo waydroid init -s "$type"
-    sudo systemctl enable --now waydroid-container.service
-    echo
-    echo "Done. Double-click any .apk file to install it, or run: universal-open app.apk"
 fi
+sudo systemctl enable --now waydroid-container.service
 
-if [ -t 0 ]; then read -rp "Press Enter to close…" _; fi
+if [ "$type" = GAPPS ]; then
+    echo
+    google_register || true
+fi
+echo
+echo "Done. Double-click any .apk to install it, or open the Play Store from the app launcher."
+pause

@@ -1,9 +1,15 @@
 # bootc-image-builder settings for the Universal OS installer ISO.
 # __IMAGE__ is replaced by the build workflow with the published image name,
 # so installed systems keep receiving updates from the registry.
+#
+# The installer only asks for language, disk and time zone. The user account
+# is created on first boot by the setup wizard (initial-setup), before the
+# desktop starts.
 
 [customizations.installer.kickstart]
 contents = """
+firstboot --enable
+
 %post
 bootc switch --mutate-in-place --transport registry __IMAGE__
 %end
@@ -14,10 +20,10 @@ enable = [
   "org.fedoraproject.Anaconda.Modules.Localization",
   "org.fedoraproject.Anaconda.Modules.Storage",
   "org.fedoraproject.Anaconda.Modules.Timezone",
-  "org.fedoraproject.Anaconda.Modules.Users",
   "org.fedoraproject.Anaconda.Modules.Network"
 ]
 disable = [
+  "org.fedoraproject.Anaconda.Modules.Users",
   "org.fedoraproject.Anaconda.Modules.Subscription",
   "org.fedoraproject.Anaconda.Modules.Security"
 ]
