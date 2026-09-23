@@ -48,7 +48,7 @@ jobs:
 
       - name: Name the ISO
         run: |
-          out="${{ steps.iso.outputs.output-directory }}"
+          out="$(realpath "${{ steps.iso.outputs.output-directory }}")"
           iso=$(sudo find "$out" -name '*.iso' | head -n1)
           sudo mv "$iso" "$out/universal-os-x86_64.iso"
           cd "$out" && sudo sha256sum universal-os-x86_64.iso | sudo tee universal-os-x86_64.iso.sha256
