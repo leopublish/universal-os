@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Universal OS logo: teal disc, amber meridian ring, white U. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="256"
+    android:viewportHeight="256">
+    <path
+        android:fillColor="#2BB3A3"
+        android:pathData="M8,128a120,120 0 1,0 240,0a120,120 0 1,0 -240,0z" />
+    <path
+        android:strokeColor="#F2A541"
+        android:strokeWidth="6"
+        android:fillColor="#00000000"
+        android:pathData="M32,128a96,96 0 1,0 192,0a96,96 0 1,0 -192,0z" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="22"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M86,70v64a42,42 0 0,0 84,0V70" />
+</vector>

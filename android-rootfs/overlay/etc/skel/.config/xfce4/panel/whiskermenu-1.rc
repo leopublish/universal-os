@@ -1,0 +1,5 @@
+button-title=Universal
+button-icon=universal-logo
+show-button-title=false
+show-button-icon=true
+favorites=firefox-esr.desktop,universal-web-claude.desktop,universal-web-chatgpt.desktop,universal-web-gemini.desktop,universal-web-telegram.desktop,universal-web-whatsapp.desktop,universal-web-gmail.desktop,thunar.desktop,xfce4-terminal.desktop

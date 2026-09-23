@@ -1,0 +1,91 @@
+name: Build Universal OS for Android
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "android/**"
+      - "android-rootfs/**"
+      - "system_files/usr/share/universal/branding/**"
+      - ".github/workflows/android.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  RELEASE_TAG: android
+
+jobs:
+  rootfs:
+    name: Linux tree (Debian arm64 + XFCE)
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the Universal OS Linux tree
+        run: docker run --rm -v "$PWD:/src" debian:trixie bash /src/android-rootfs/build-rootfs.sh /src/out
+
+      - name: Publish to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" out
+          gh release view "$RELEASE_TAG" >/dev/null 2>&1 || gh release create "$RELEASE_TAG" \
+            --title "Universal OS for Android" \
+            --notes "Install **universal-os-android.apk** on a 64-bit (ARM64) Android phone. On first launch the app downloads universal-rootfs-arm64.tar.gz by itself." || true
+          gh release upload "$RELEASE_TAG" out/universal-rootfs-arm64.tar.gz out/universal-rootfs-arm64.tar.gz.sha256 --clobber
+
+  apk:
+    name: Android app (APK)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+
+      - name: Bundle proot
+        run: bash android/fetch-proot.sh
+
+      - name: Signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.UNIVERSAL_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/universal.p12"
+            echo "UNIVERSAL_KEYSTORE=$RUNNER_TEMP/universal.p12" >> "$GITHUB_ENV"
+          else
+            echo "No signing key secret: the APK will use a debug key."
+          fi
+
+      - name: Build APK
+        env:
+          UNIVERSAL_KEYSTORE_PASSWORD: ${{ secrets.UNIVERSAL_KEYSTORE_PASSWORD }}
+          VERSION_CODE: ${{ github.run_number }}
+        run: |
+          gradle -p android assembleRelease --no-daemon --stacktrace
+          cp android/app/build/outputs/apk/release/app-release.apk universal-os-android.apk
+          sha256sum universal-os-android.apk | tee universal-os-android.apk.sha256
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: universal-os-android-apk
+          path: |
+            universal-os-android.apk
+            universal-os-android.apk.sha256
+
+      - name: Publish to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view "$RELEASE_TAG" >/dev/null 2>&1 || gh release create "$RELEASE_TAG" \
+            --title "Universal OS for Android" \
+            --notes "Install **universal-os-android.apk** on a 64-bit (ARM64) Android phone. On first launch the app downloads universal-rootfs-arm64.tar.gz by itself." || true
+          gh release upload "$RELEASE_TAG" universal-os-android.apk universal-os-android.apk.sha256 --clobber

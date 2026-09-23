@@ -1,0 +1,25 @@
+#!/bin/sh
+# Starts the Universal OS desktop inside the Android app:
+#   Xtigervnc  - X server + VNC, localhost only, one-time session password
+#   XFCE       - the desktop, in the Universal design
+#   websockify - lets the app's built-in viewer (noVNC) show the desktop
+# Called by the app with UNIVERSAL_VNC_PASS and UNIVERSAL_GEOMETRY set.
+set -u
+: "${UNIVERSAL_VNC_PASS:?missing session password}"
+GEOM="${UNIVERSAL_GEOMETRY:-1280x720}"
+
+mkdir -p "$HOME/.vnc" /tmp/.X11-unix
+chmod 1777 /tmp/.X11-unix 2>/dev/null || true
+rm -f /tmp/.X1-lock /tmp/.X11-unix/X1
+printf '%s\n' "$UNIVERSAL_VNC_PASS" | vncpasswd -f > "$HOME/.vnc/passwd"
+chmod 600 "$HOME/.vnc/passwd"
+
+Xtigervnc :1 -localhost -rfbport 5901 -rfbauth "$HOME/.vnc/passwd" \
+    -SecurityTypes VncAuth -geometry "$GEOM" -depth 24 -dpi 110 -AlwaysShared \
+    > "$HOME/.universal-x.log" 2>&1 &
+
+for _ in $(seq 1 100); do [ -e /tmp/.X11-unix/X1 ] && break; sleep 0.1; done
+
+DISPLAY=:1 /usr/local/bin/universal-xstartup > "$HOME/.universal-session.log" 2>&1 &
+
+exec websockify --web /usr/share/novnc 127.0.0.1:6080 127.0.0.1:5901

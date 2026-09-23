@@ -1,0 +1,11 @@
+#!/bin/sh
+# XFCE session for Universal OS on Android.
+export XDG_CURRENT_DESKTOP=XFCE
+export XDG_SESSION_TYPE=x11
+export XDG_RUNTIME_DIR="/tmp/runtime-$USER"
+mkdir -p "$XDG_RUNTIME_DIR" && chmod 700 "$XDG_RUNTIME_DIR"
+# Firefox's sandbox can't work inside proot; the app itself is Android-sandboxed.
+export MOZ_FAKE_NO_SANDBOX=1 MOZ_DISABLE_CONTENT_SANDBOX=1 MOZ_DISABLE_GMP_SANDBOX=1 \
+       MOZ_DISABLE_RDD_SANDBOX=1 MOZ_DISABLE_SOCKET_PROCESS_SANDBOX=1 MOZ_DISABLE_UTILITY_SANDBOX=1
+unset SESSION_MANAGER
+exec dbus-launch --exit-with-session startxfce4

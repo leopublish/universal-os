@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ink">#FF0B1420</color>
+    <color name="surface">#FF131B23</color>
+    <color name="field">#FF0F161D</color>
+    <color name="teal">#FF2BB3A3</color>
+    <color name="teal_dark">#FF137A70</color>
+    <color name="on_teal">#FF05201C</color>
+    <color name="amber">#FFF2A541</color>
+    <color name="text">#FFE6EDF1</color>
+    <color name="dim">#FF93A3AD</color>
+    <color name="error">#FFF06368</color>
+</resources>

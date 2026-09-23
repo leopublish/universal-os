@@ -49,6 +49,24 @@ systemctl reboot
 Replace `OWNER` with the lowercase GitHub account that builds the image. Your files are kept.
 To go back: `sudo bootc rollback` and reboot.
 
+### Option C: Universal OS for Android (app)
+
+An app that runs the Universal OS desktop on a 64-bit Android phone. It doesn't replace Android.
+
+1. Download **universal-os-android.apk** from the repository's **Releases → Universal OS for Android**.
+2. Open it on the phone and allow installing from your browser or file manager when Android asks.
+3. Open **Universal OS**, create your account (full name, username, password), and tap **Create account and install**.
+   It downloads about 600 MB (use Wi-Fi) and needs about 4 GB free.
+4. From then on, the app asks for your password at every launch, then opens the desktop full-screen.
+
+The Android edition runs Debian 13 with the XFCE desktop in the Universal design, inside the app, using proot (no root needed).
+It includes Firefox and app windows for Claude, ChatGPT, Gemini, Telegram, WhatsApp, the Meta apps and Google services.
+The Android and Windows runtimes are left out, since the phone already runs Android apps.
+If the desktop closes by itself on Android 12 or newer, the app's login screen explains the one-time fix.
+
+It bundles Termux's builds of [proot](https://github.com/termux/proot) (GPL-2.0) and talloc (LGPL-3.0).
+Their source code is available from [termux-packages](https://github.com/termux/termux-packages).
+
 ## First steps after installing
 
 | To… | Do this |

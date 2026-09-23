@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Universal OS</string>
+    <string name="welcome_back">Welcome back, %1$s</string>
+    <string name="help_title">If the desktop closes by itself</string>
+    <string name="help_body">Android 12 and newer can stop apps that run many background processes, which a full desktop does.\n\nAndroid 14 and newer: open Settings → About phone, tap Build number 7 times, then go to Settings → System → Developer options and turn on “Disable child process restrictions”.\n\nAndroid 12 and 13: connect the phone to a computer with USB debugging and run:\nadb shell settings put global settings_enable_monitor_phantom_procs false</string>
+</resources>

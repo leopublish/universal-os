@@ -1,0 +1,7 @@
+# Android build output (built by GitHub Actions)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/app/src/main/jniLibs/
+out/

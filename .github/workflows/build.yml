@@ -3,7 +3,12 @@ name: Build Universal OS image
 on:
   push:
     branches: [main]
-    paths-ignore: ["**.md"]
+    paths-ignore:
+      - "**.md"
+      - "android/**"
+      - "android-rootfs/**"
+      - "design/**"
+      - ".github/workflows/android.yml"
   schedule:
     - cron: "30 4 * * 1"   # weekly rebuild picks up Fedora security updates
   workflow_dispatch:
