@@ -44,7 +44,7 @@ jobs:
           config-file: ./disk_config/iso.toml
           image: ${{ env.IMAGE }}
           types: anaconda-iso
-          additional-args: --use-librepo=True
+          additional-args: --use-librepo=True --rootfs btrfs
 
       - name: Name the ISO
         run: |

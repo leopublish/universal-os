@@ -9,6 +9,7 @@ on:
       - "android-rootfs/**"
       - "design/**"
       - ".github/workflows/android.yml"
+      - ".github/workflows/build-iso.yml"
   schedule:
     - cron: "30 4 * * 1"   # weekly rebuild picks up Fedora security updates
   workflow_dispatch:
