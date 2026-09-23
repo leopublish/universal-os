@@ -56,7 +56,7 @@ An app that runs the Universal OS desktop on a 64-bit Android phone. It doesn't 
 1. Download **universal-os-android.apk** from the repository's **Releases → Universal OS for Android**.
 2. Open it on the phone and allow installing from your browser or file manager when Android asks.
 3. Open **Universal OS**, create your account (full name, username, password), and tap **Create account and install**.
-   It downloads about 600 MB (use Wi-Fi) and needs about 4 GB free.
+   It downloads about 430 MB (use Wi-Fi) and needs about 4 GB free.
 4. From then on, the app asks for your password at every launch, then opens the desktop full-screen.
 
 The Android edition runs Debian 13 with the XFCE desktop in the Universal design, inside the app, using proot (no root needed).

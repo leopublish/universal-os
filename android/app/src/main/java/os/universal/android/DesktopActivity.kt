@@ -31,7 +31,7 @@ import kotlin.math.min
 class DesktopActivity : AppCompatActivity() {
 
     private lateinit var web: WebView
-    private lateinit var overlay: LinearLayout
+    private lateinit var loadingView: LinearLayout
     private lateinit var status: TextView
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -61,7 +61,7 @@ class DesktopActivity : AppCompatActivity() {
             gravity = Gravity.CENTER
             setPadding(0, 32, 0, 0)
         }
-        overlay = LinearLayout(this).apply {
+        loadingView = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
             setBackgroundColor(Color.parseColor("#0B1420"))
@@ -72,7 +72,7 @@ class DesktopActivity : AppCompatActivity() {
 
         setContentView(FrameLayout(this).apply {
             addView(web, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-            addView(overlay, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+            addView(loadingView, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         })
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -116,7 +116,7 @@ class DesktopActivity : AppCompatActivity() {
             "&show_dot=true&password=${SessionService.secret}"
         web.loadUrl(url)
         web.visibility = View.VISIBLE
-        overlay.animate().alpha(0f).setDuration(400).withEndAction { overlay.visibility = View.GONE }
+        loadingView.animate().alpha(0f).setDuration(400).withEndAction { loadingView.visibility = View.GONE }
     }
 
     private fun showFailure() {

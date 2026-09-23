@@ -129,7 +129,7 @@
                 android:layout_marginTop="12dp"
                 android:gravity="center"
                 android:lineSpacingExtra="3dp"
-                android:text="Downloads about 600 MB and uses about 3 GB of storage. Use Wi-Fi."
+                android:text="Downloads about 430 MB and uses about 3 GB of storage. Use Wi-Fi."
                 android:textColor="@color/dim"
                 android:textSize="13sp" />
         </LinearLayout>
