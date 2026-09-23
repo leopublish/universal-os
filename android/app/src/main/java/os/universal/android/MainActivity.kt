@@ -134,6 +134,7 @@ class MainActivity : AppCompatActivity() {
                 installing = true; showState(); progressText.text = "Removing…"
                 Thread {
                     Paths.installedMarker(this).delete()
+                    Paths.extractedMarker(this).delete()
                     Paths.deleteTree(Paths.rootfs(this))
                     Accounts.clear(this)
                     runOnUiThread { installing = false; showState() }

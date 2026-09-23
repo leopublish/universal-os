@@ -67,7 +67,7 @@ object Proot {
         return ProcessBuilder(args).redirectErrorStream(true).also {
             it.environment()["PROOT_LOADER"] = "$nativeDir/libproot-loader.so"
             it.environment()["PROOT_TMP_DIR"] = Paths.prootTmp(c).absolutePath
-            it.environment()["LD_LIBRARY_PATH"] = Paths.libDir(c).absolutePath
+            it.environment()["LD_LIBRARY_PATH"] = "${Paths.libDir(c).absolutePath}:$nativeDir"
         }
     }
 }

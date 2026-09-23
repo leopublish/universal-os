@@ -31,16 +31,24 @@ class Installer(private val c: Context, private val progress: (String, Int) -> U
         val archive = File(c.cacheDir, "universal-rootfs.tar.gz")
         val rootfs = Paths.rootfs(c)
         Paths.installedMarker(c).delete()
-        if (rootfs.exists()) { progress("Removing an unfinished install…", 0); Paths.deleteTree(rootfs) }
+        val extracted = Paths.extractedMarker(c)
 
-        val expected = fetchText("$ROOTFS_URL.sha256").trim().split(Regex("\\s+")).first().lowercase()
-        download(ROOTFS_URL, archive)                           // 0–55 %
-        progress("Checking the download…", 56)
-        val actual = sha256(archive)
-        if (actual != expected) { archive.delete(); throw IOException("The download was damaged. Please try again.") }
+        if (extracted.exists() && rootfs.isDirectory) {
+            progress("Universal OS is already downloaded. Finishing setup…", 92)
+        } else {
+            extracted.delete()
+            if (rootfs.exists()) { progress("Removing an unfinished install…", 0); Paths.deleteTree(rootfs) }
 
-        extract(archive, rootfs)                                // 57–92 %
-        archive.delete()
+            val expected = fetchText("$ROOTFS_URL.sha256").trim().split(Regex("\\s+")).first().lowercase()
+            download(ROOTFS_URL, archive)                       // 0–55 %
+            progress("Checking the download…", 56)
+            val actual = sha256(archive)
+            if (actual != expected) { archive.delete(); throw IOException("The download was damaged. Please try again.") }
+
+            extract(archive, rootfs)                            // 57–92 %
+            archive.delete()
+            extracted.writeText("1")
+        }
 
         progress("Setting up networking…", 93)
         File(rootfs, "etc/resolv.conf").apply { delete(); writeText("nameserver 8.8.8.8\nnameserver 1.1.1.1\n") }

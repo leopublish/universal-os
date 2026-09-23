@@ -15,6 +15,8 @@ object Paths {
     fun libDir(c: Context) = File(c.filesDir, "lib")
     fun prootTmp(c: Context) = File(c.cacheDir, "proot-tmp")
     fun installedMarker(c: Context) = File(c.filesDir, "installed")
+    /** Set once the Linux tree is fully unpacked, so a retry can skip the download. */
+    fun extractedMarker(c: Context) = File(c.filesDir, "extracted")
     fun sessionLog(c: Context) = File(c.filesDir, "session.log")
 
     fun isInstalled(c: Context) = installedMarker(c).exists() && rootfs(c).isDirectory
