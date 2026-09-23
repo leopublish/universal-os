@@ -1,0 +1,12 @@
+[Default Applications]
+application/vnd.android.package-archive=universal-open.desktop
+application/x-ms-dos-executable=universal-open.desktop
+application/x-msdownload=universal-open.desktop
+application/x-msi=universal-open.desktop
+application/x-ms-shortcut=universal-open.desktop
+
+[Added Associations]
+application/vnd.android.package-archive=universal-open.desktop;
+application/x-ms-dos-executable=universal-open.desktop;
+application/x-msdownload=universal-open.desktop;
+application/x-msi=universal-open.desktop;

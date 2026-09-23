@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Runtimes
+GenericName=Universal OS runtimes
+Comment=See the state of the Linux, Android and Windows runtimes
+Exec=universal-runtimes --wait
+Icon=universal-logo
+Terminal=true
+Categories=System;Monitor;
+Keywords=android;windows;wine;waydroid;runtime;

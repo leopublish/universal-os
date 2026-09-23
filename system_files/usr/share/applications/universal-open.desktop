@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Universal Runtime
+GenericName=Run Android and Windows programs
+Comment=Open .apk files in the Android runtime and .exe/.msi files in the Windows runtime
+Exec=universal-open %f
+Icon=universal-logo
+Terminal=false
+NoDisplay=true
+MimeType=application/vnd.android.package-archive;application/x-ms-dos-executable;application/x-msdownload;application/x-msi;application/x-ms-shortcut;application/x-dosexec;

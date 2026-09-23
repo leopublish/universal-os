@@ -1,0 +1,16 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Universal OS"
+            }
+        ],
+        "Description": "Universal OS desktop: a top bar with the global menu and a centred, floating dock.",
+        "Id": "org.universal.desktop",
+        "License": "GPL-2.0-or-later",
+        "Name": "Universal",
+        "Version": "1.0"
+    },
+    "X-Plasma-APIVersion": "2"
+}

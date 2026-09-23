@@ -1,0 +1,41 @@
+#!/usr/bin/bash
+# universal-runtimes — show the state of every Universal OS app runtime.
+set -uo pipefail
+
+b=$'\e[1m'; d=$'\e[2m'; g=$'\e[32m'; y=$'\e[33m'; r=$'\e[0m'
+row() { printf "  %-10s %-22b %s\n" "$1" "$2" "$3"; }
+
+. /usr/lib/os-release
+echo "${b}${PRETTY_NAME}${r}  ${d}$(uname -r) · $(uname -m)${r}"
+echo
+
+# Native
+row "Linux" "${g}ready${r}" "native ELF · $(flatpak list --app 2>/dev/null | wc -l) Flatpak apps"
+
+# Android
+if [ ! -f /var/lib/waydroid/waydroid.cfg ]; then
+    row "Android" "${y}not set up${r}" "run: universal-android-setup"
+elif waydroid status 2>/dev/null | grep -Eq 'Session:[[:space:]]+RUNNING'; then
+    row "Android" "${g}running${r}" "Waydroid · $(waydroid app list 2>/dev/null | grep -c '^Name:') apps"
+else
+    row "Android" "${d}stopped${r}" "starts when you open an Android app"
+fi
+
+# Windows
+if command -v wine >/dev/null; then
+    n=$(find "${XDG_DATA_HOME:-$HOME/.local/share}/universal/windows" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+    row "Windows" "${g}ready${r}" "$(wine --version 2>/dev/null) · $n app prefixes"
+else
+    row "Windows" "${y}missing${r}" "wine is not installed"
+fi
+
+# Containers
+if command -v distrobox >/dev/null; then
+    row "Distros" "${g}ready${r}" "distrobox · $(distrobox list 2>/dev/null | tail -n +2 | wc -l) containers"
+fi
+
+# Updates
+echo
+bootc status --format=humanreadable 2>/dev/null | sed -n '1,6p' | sed 's/^/  /' || true
+
+if [ -t 0 ] && [ "${1:-}" = "--wait" ]; then echo; read -rp "Press Enter to close…" _; fi

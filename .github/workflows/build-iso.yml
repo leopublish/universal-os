@@ -1,0 +1,66 @@
+name: Build Universal OS installer ISO
+
+on:
+  workflow_run:
+    workflows: ["Build Universal OS image"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: universal-os
+
+jobs:
+  iso:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+
+      - uses: actions/checkout@v4
+
+      - name: Image reference (lowercase)
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/${IMAGE_NAME}:latest" >> "$GITHUB_ENV"
+
+      - name: Point installed systems at the registry image
+        run: sed -i "s|__IMAGE__|${IMAGE}|" disk_config/iso.toml && cat disk_config/iso.toml
+
+      - name: Log in to the registry (root podman, used by the ISO builder)
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo podman login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Pull the image
+        run: sudo podman pull "${IMAGE}"
+
+      - name: Build installer ISO
+        id: iso
+        uses: osbuild/bootc-image-builder-action@main
+        with:
+          config-file: ./disk_config/iso.toml
+          image: ${{ env.IMAGE }}
+          types: anaconda-iso
+          additional-args: --use-librepo=True
+
+      - name: Name the ISO
+        run: |
+          out="${{ steps.iso.outputs.output-directory }}"
+          iso=$(sudo find "$out" -name '*.iso' | head -n1)
+          sudo mv "$iso" "$out/universal-os-x86_64.iso"
+          cd "$out" && sudo sha256sum universal-os-x86_64.iso | sudo tee universal-os-x86_64.iso.sha256
+          sudo chmod -R a+r "$out"
+          echo "ISO_DIR=$out" >> "$GITHUB_ENV"
+
+      - name: Upload ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: universal-os-x86_64-iso
+          path: |
+            ${{ env.ISO_DIR }}/universal-os-x86_64.iso
+            ${{ env.ISO_DIR }}/universal-os-x86_64.iso.sha256
+          retention-days: 14
+          compression-level: 0

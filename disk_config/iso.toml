@@ -1,0 +1,23 @@
+# bootc-image-builder settings for the Universal OS installer ISO.
+# __IMAGE__ is replaced by the build workflow with the published image name,
+# so installed systems keep receiving updates from the registry.
+
+[customizations.installer.kickstart]
+contents = """
+%post
+bootc switch --mutate-in-place --transport registry __IMAGE__
+%end
+"""
+
+[customizations.installer.modules]
+enable = [
+  "org.fedoraproject.Anaconda.Modules.Localization",
+  "org.fedoraproject.Anaconda.Modules.Storage",
+  "org.fedoraproject.Anaconda.Modules.Timezone",
+  "org.fedoraproject.Anaconda.Modules.Users",
+  "org.fedoraproject.Anaconda.Modules.Network"
+]
+disable = [
+  "org.fedoraproject.Anaconda.Modules.Subscription",
+  "org.fedoraproject.Anaconda.Modules.Security"
+]

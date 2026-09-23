@@ -1,0 +1,79 @@
+#!/usr/bin/bash
+# universal-open — Universal OS runtime dispatcher.
+# Opens any program package with the runtime that matches it:
+#   .apk          -> Android runtime (Waydroid)
+#   .exe/.msi     -> Windows runtime (Wine, one prefix per program)
+#   .AppImage     -> native Linux
+#   .flatpak(ref) -> Flatpak
+# Anything else is handed to the normal file opener.
+set -euo pipefail
+
+usage() { echo "usage: universal-open <file>"; exit 2; }
+[ $# -ge 1 ] || usage
+f="$(realpath -- "$1")"
+[ -e "$f" ] || { echo "universal-open: $1: no such file" >&2; exit 1; }
+name="$(basename -- "$f")"
+lower="${name,,}"
+
+say() {
+    echo "$1"
+    if [ -n "${WAYLAND_DISPLAY:-}${DISPLAY:-}" ] && command -v kdialog >/dev/null; then
+        kdialog --title "Universal OS" --passivepopup "$1" 8 >/dev/null 2>&1 || true
+    fi
+}
+
+runtime=""
+case "$lower" in
+    *.apk)                     runtime=android ;;
+    *.exe|*.msi|*.bat|*.lnk)   runtime=windows ;;
+    *.appimage)                runtime=appimage ;;
+    *.flatpak|*.flatpakref)    runtime=flatpak ;;
+esac
+if [ -z "$runtime" ]; then
+    case "$(file --brief --mime-type -- "$f" 2>/dev/null || true)" in
+        application/vnd.android.package-archive) runtime=android ;;
+        application/x-dosexec|application/x-ms-dos-executable|application/x-msdownload|application/x-msi) runtime=windows ;;
+        *) exec xdg-open "$f" ;;
+    esac
+fi
+
+case "$runtime" in
+android)
+    if [ ! -f /var/lib/waydroid/waydroid.cfg ]; then
+        say "The Android runtime isn't set up yet. Opening setup — run this file again when it finishes."
+        exec konsole -e universal-android-setup
+    fi
+    if ! waydroid status 2>/dev/null | grep -Eq 'Session:[[:space:]]+RUNNING'; then
+        say "Starting the Android runtime…"
+        (waydroid session start >/dev/null 2>&1 &)
+        for _ in $(seq 1 90); do
+            waydroid status 2>/dev/null | grep -Eq 'Session:[[:space:]]+RUNNING' && break
+            sleep 1
+        done
+    fi
+    say "Installing $name into the Android runtime…"
+    if waydroid app install "$f"; then
+        say "$name is installed. It now appears in your app launcher."
+    else
+        say "Android could not install $name. Check that it's a valid APK for $(uname -m)."
+        exit 1
+    fi
+    ;;
+windows)
+    id="$(echo "${name%.*}" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-//;s/-$//')"
+    export WINEPREFIX="${XDG_DATA_HOME:-$HOME/.local/share}/universal/windows/${id:-app}"
+    mkdir -p "$WINEPREFIX"
+    say "Running $name in the Windows runtime (its own drive C: in $WINEPREFIX)."
+    case "$lower" in
+        *.msi) exec wine msiexec /i "$f" ;;
+        *)     cd "$(dirname -- "$f")" && exec wine start /wait /unix "$f" ;;
+    esac
+    ;;
+appimage)
+    chmod +x -- "$f"
+    exec "$f"
+    ;;
+flatpak)
+    exec flatpak install --user -y "$f"
+    ;;
+esac

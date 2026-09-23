@@ -1,0 +1,25 @@
+#!/usr/bin/bash
+# universal-android-setup — one-time setup of the Universal OS Android runtime.
+# Downloads a LineageOS-based Android system (about 1 GB) for Waydroid.
+#   universal-android-setup           plain Android (no Google apps)
+#   universal-android-setup --gapps   Android with Google apps
+set -euo pipefail
+
+type=VANILLA
+[ "${1:-}" = "--gapps" ] && type=GAPPS
+
+if [ -f /var/lib/waydroid/waydroid.cfg ]; then
+    echo "The Android runtime is already set up."
+    echo "Start it with:   waydroid session start"
+    echo "Reset it with:   sudo waydroid init -f -s $type"
+else
+    echo "== Universal OS · Android runtime setup =="
+    echo "This downloads the Android system image (~1 GB). Your password is needed once."
+    echo
+    sudo waydroid init -s "$type"
+    sudo systemctl enable --now waydroid-container.service
+    echo
+    echo "Done. Double-click any .apk file to install it, or run: universal-open app.apk"
+fi
+
+if [ -t 0 ]; then read -rp "Press Enter to close…" _; fi

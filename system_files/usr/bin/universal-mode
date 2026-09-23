@@ -1,0 +1,21 @@
+#!/usr/bin/bash
+# universal-mode — switch the shell between touch and desktop behaviour.
+#   universal-mode touch     tablet mode: larger targets, on-screen keyboard
+#   universal-mode desktop   pointer-first desktop
+#   universal-mode auto      follow the hardware (keyboard attached, tablet switch)
+# For a phone-style home screen, pick the "Plasma Mobile" session at login.
+set -euo pipefail
+
+case "${1:-status}" in
+    touch|tablet|phone) v=on ;;
+    desktop)            v=off ;;
+    auto)               v=auto ;;
+    status)
+        echo "Tablet mode: $(kreadconfig6 --file kwinrc --group Input --key TabletMode --default auto)"
+        exit 0 ;;
+    *) echo "usage: universal-mode touch|desktop|auto|status"; exit 2 ;;
+esac
+
+kwriteconfig6 --file kwinrc --group Input --key TabletMode "$v"
+dbus-send --session --type=method_call --dest=org.kde.KWin /KWin org.kde.KWin.reconfigure >/dev/null 2>&1 || true
+echo "Tablet mode: $v"

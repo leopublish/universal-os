@@ -1,0 +1,52 @@
+name: Build Universal OS image
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**.md"]
+  schedule:
+    - cron: "30 4 * * 1"   # weekly rebuild picks up Fedora security updates
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: universal-os
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+
+      - uses: actions/checkout@v4
+
+      - name: Registry name (lowercase)
+        run: echo "REGISTRY=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
+
+      - name: Build image
+        id: build
+        uses: redhat-actions/buildah-build@v2
+        with:
+          containerfiles: ./Containerfile
+          image: ${{ env.IMAGE_NAME }}
+          tags: latest ${{ github.sha }}
+          oci: false
+
+      - name: Push to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build.outputs.image }}
+          tags: ${{ steps.build.outputs.tags }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}

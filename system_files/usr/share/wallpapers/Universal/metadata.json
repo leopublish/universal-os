@@ -1,0 +1,12 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Universal OS"
+            }
+        ],
+        "Id": "Universal",
+        "License": "CC-BY-SA-4.0",
+        "Name": "Universal Meridian"
+    }
+}

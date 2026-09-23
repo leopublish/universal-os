@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Set Up Android Runtime
+Comment=Download the Android system so .apk apps can run (about 1 GB)
+Exec=universal-android-setup
+Icon=waydroid
+Terminal=true
+Categories=System;
+Keywords=android;apk;waydroid;

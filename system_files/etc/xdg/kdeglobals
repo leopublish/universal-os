@@ -1,0 +1,9 @@
+[KDE]
+LookAndFeelPackage=org.universal.desktop
+
+[General]
+ColorScheme=BreezeDark
+AccentColor=43,179,163
+
+[Icons]
+Theme=breeze-dark
