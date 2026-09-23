@@ -32,10 +32,15 @@ var tasks = dock.addWidget("org.kde.plasma.icontasks");
 tasks.currentConfigGroup = ["General"];
 tasks.writeConfig("launchers", [
     "preferred://filemanager",
-    "preferred://browser",
+    "applications:com.google.Chrome.desktop",
+    "applications:universal-web-claude.desktop",
+    "applications:universal-web-chatgpt.desktop",
+    "applications:universal-web-gemini.desktop",
+    "applications:org.telegram.desktop.desktop",
+    "applications:universal-web-whatsapp.desktop",
+    "applications:universal-web-gmail.desktop",
     "applications:org.kde.konsole.desktop",
     "applications:org.kde.discover.desktop",
-    "applications:universal-runtimes.desktop",
     "applications:systemsettings.desktop"
 ]);
 tasks.writeConfig("showOnlyCurrentDesktop", "false");

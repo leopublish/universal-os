@@ -2,8 +2,7 @@
 widgetStyle=Breeze
 
 [kdeglobals][General]
-ColorScheme=BreezeDark
-AccentColor=43,179,163
+ColorScheme=UniversalDark
 
 [kdeglobals][Icons]
 Theme=breeze-dark
@@ -20,6 +19,10 @@ LayoutName=org.kde.breeze.desktop
 [kwinrc][org.kde.kdecoration2]
 library=org.kde.breeze
 theme=Breeze
+
+[ksplashrc][KSplash]
+Engine=KSplashQML
+Theme=org.universal.desktop
 
 [Wallpaper]
 Image=Universal

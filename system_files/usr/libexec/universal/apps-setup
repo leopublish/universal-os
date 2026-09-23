@@ -1,0 +1,50 @@
+#!/usr/bin/bash
+# First-boot app setup (runs as root once the network is up):
+#   - Google Chrome and Telegram from Flathub
+#   - icons for the web apps (Claude, ChatGPT, Gemini, Meta, Google)
+# Retries on the next boot, or after a minute, until everything succeeds.
+set -uo pipefail
+
+done_marker=/var/lib/universal/apps-setup-done
+icons=/var/lib/universal/icons
+mkdir -p "$icons"
+ok=1
+
+flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || ok=0
+for app in com.google.Chrome org.telegram.desktop; do
+    flatpak info --system "$app" >/dev/null 2>&1 && continue
+    flatpak install --system -y --noninteractive flathub "$app" || ok=0
+done
+
+# Web-app icons, 128 px, via Google's public favicon service.
+while read -r id domain; do
+    [ -s "$icons/$id.png" ] && continue
+    curl -fsSL --max-time 20 -o "$icons/$id.png.tmp" \
+        "https://www.google.com/s2/favicons?domain=${domain}&sz=128" \
+        && mv "$icons/$id.png.tmp" "$icons/$id.png" || { rm -f "$icons/$id.png.tmp"; ok=0; }
+done <<'EOF'
+claude claude.ai
+chatgpt chatgpt.com
+gemini gemini.google.com
+whatsapp whatsapp.com
+instagram instagram.com
+facebook facebook.com
+messenger messenger.com
+threads threads.com
+gmail mail.google.com
+gdrive drive.google.com
+gcalendar calendar.google.com
+gdocs docs.google.com
+youtube youtube.com
+gmaps maps.google.com
+gmeet meet.google.com
+EOF
+chmod 0644 "$icons"/*.png 2>/dev/null || true
+
+if [ "$ok" = 1 ]; then
+    touch "$done_marker"
+    echo "Universal OS apps are ready."
+else
+    echo "Some apps could not be set up yet; will retry." >&2
+    exit 1
+fi

@@ -1,0 +1,16 @@
+[Unit]
+Description=Universal OS first-boot apps (Chrome, Telegram, web-app icons)
+Wants=network-online.target
+After=network-online.target flatpak-system-helper.service
+ConditionPathExists=!/var/lib/universal/apps-setup-done
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/universal/apps-setup
+Restart=on-failure
+RestartSec=60
+TimeoutStartSec=45min
+
+[Install]
+WantedBy=multi-user.target

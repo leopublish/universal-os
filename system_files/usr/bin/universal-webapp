@@ -1,0 +1,18 @@
+#!/usr/bin/bash
+# universal-webapp — open a web service (Claude, ChatGPT, WhatsApp, Gmail…) in its
+# own app window, without browser tabs or toolbars.
+#   universal-webapp https://claude.ai
+set -euo pipefail
+url="${1:?usage: universal-webapp <url>}"
+
+if flatpak info com.google.Chrome >/dev/null 2>&1; then
+    exec flatpak run com.google.Chrome --app="$url"
+elif command -v google-chrome >/dev/null; then
+    exec google-chrome --app="$url"
+elif command -v chromium-browser >/dev/null; then
+    exec chromium-browser --app="$url"
+else
+    # Chrome is installed on first boot; until then use the default browser.
+    kdialog --title "Universal OS" --passivepopup "Google Chrome is still installing. Opening in your browser for now." 6 >/dev/null 2>&1 || true
+    exec xdg-open "$url"
+fi

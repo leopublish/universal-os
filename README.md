@@ -13,6 +13,8 @@ It's Phase 1 of the Universal OS architecture: one system that runs **Linux**, *
 | Android apps | Waydroid (LineageOS container). Double-click an `.apk` to install it. |
 | Windows apps | Wine. Double-click an `.exe` or `.msi`; each program gets its own drive C:. |
 | Linux apps | Flatpak (Flathub), native packages, and `distrobox` for any other distro |
+| Included apps | **Google Chrome** and **Telegram** (installed on first boot with internet) · app windows for **Claude, ChatGPT, Gemini, WhatsApp, Instagram, Facebook, Messenger, Threads, Gmail, Google Drive, Calendar, Docs, YouTube, Maps, Meet** · optional **Claude Code** in Welcome |
+| Design | Universal Dark / Light colour schemes, Meridian wallpaper (dark and light), branded boot splash, start-up splash, login and lock screens, terminal theme |
 | Secure Boot | Works: Fedora's signed shim and kernel |
 
 ## Install it
