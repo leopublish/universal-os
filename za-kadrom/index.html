@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f0b2b">
+<title>ЗА КАДРОМ — измени свою историю</title>
+<style>
+:root{--wine:#5a0f23;--gold:#d4af6a;--gold2:#f3dca0;--cream:#f6ecd6;--ink:#2a1a14;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:#0b0610 linear-gradient(#1f0b2b,#0b0610 80%) no-repeat}
+body{margin:0;color:var(--cream);font:17px/1.6 Georgia,"Times New Roman",serif;overflow-x:hidden;-webkit-text-size-adjust:100%}
+.spot{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 65% 45% at 50% 0,#f3dca03a,transparent 70%),radial-gradient(ellipse at 50% 115%,#78143259,transparent 60%);animation:br 7s ease-in-out infinite alternate}
+@keyframes br{to{opacity:.6}}
+.cur{position:fixed;top:0;bottom:0;width:51%;z-index:5;pointer-events:none;background:repeating-linear-gradient(90deg,#3a0816 0,#6d1530 26px,#4a0b1f 52px,#2a0510 70px);box-shadow:0 0 40px #000;transition:transform .7s cubic-bezier(.7,0,.3,1)}
+.l{left:0;transform:translateX(-90%);border-right:3px solid var(--gold)}
+.r{right:0;transform:translateX(90%);border-left:3px solid var(--gold)}
+.shut .cur{transform:none}
+.scr{display:none;position:relative;z-index:1;max-width:700px;margin:0 auto;padding:28px 26px 56px;opacity:0;transform:translateY(14px);transition:opacity .6s,transform .6s}
+.scr.on{display:block}
+.scr.in{opacity:1;transform:none}
+[hidden]{display:none!important}
+.ticket{background:var(--cream);color:var(--ink);border-radius:16px;box-shadow:0 24px 70px #000b,0 0 40px #d4af6a33}
+.main{padding:36px 24px 26px;text-align:center;outline:2px solid #b08a45;outline-offset:-12px;border-radius:16px 16px 0 0}
+.eyebrow{margin:0;font-size:13px;letter-spacing:.3em;color:#8a6a26}
+h1{margin:.2em 0 0;font-weight:700;font-size:clamp(40px,12vw,72px);letter-spacing:.12em;line-height:1.05;color:var(--wine);text-shadow:0 2px 0 #d4af6a88}
+.tag{margin:.2em 0 1em;font-style:italic;font-size:clamp(20px,5vw,26px);color:#8a6a26}
+blockquote{margin:0 auto;font-style:italic;font-size:16px}
+blockquote p{margin:.5em 0}
+.info{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:18px 0 0;padding-top:16px;border-top:1px solid #b08a4577;text-align:left;font-size:15px}
+.info dt{color:#8a6a26}.info dd{margin:0;font-weight:700}
+.stub{position:relative;display:flex;justify-content:space-around;align-items:center;gap:10px;padding:16px 22px;border-top:2px dashed #b08a45;font-size:14px;letter-spacing:.2em}
+.stub::before,.stub::after{content:"";position:absolute;top:-13px;width:24px;height:24px;border-radius:50%;background:#150a1d}
+.stub::before{left:-12px}.stub::after{right:-12px}
+.stub b{font-size:22px;color:var(--wine)}
+.btn{display:block;max-width:100%;margin:26px auto 0;padding:18px 30px;border:0;border-radius:999px;background:linear-gradient(135deg,#f3dca0,#d4af6a 50%,#a9812f);color:#2a0a14;font:700 16px/1.25 Georgia,serif;letter-spacing:.06em;cursor:pointer;box-shadow:0 8px 30px #d4af6a55;transition:transform .2s,box-shadow .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px #d4af6a88}
+.prog{display:flex;align-items:center;gap:12px;margin:4px 0 16px}
+.bar{display:flex;flex:1;gap:6px}
+.bar i{flex:1;height:6px;border-radius:3px;background:#ffffff22;transition:background .5s}
+.bar i.d{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.bar i.c{background:#d4af6a77;animation:pl 1.4s infinite alternate}
+@keyframes pl{to{background:#d4af6acc}}
+#pl{font-size:14px;letter-spacing:.1em;color:var(--gold);white-space:nowrap}
+.card{padding:26px 20px;border:1px solid #d4af6a66;border-radius:18px;background:linear-gradient(160deg,#5a0f23d9,#25103ae6);box-shadow:0 20px 60px #000a}
+.c{text-align:center}
+.ch{margin:0;font-size:13px;letter-spacing:.14em;color:var(--gold)}
+h2{margin:.3em 0 .5em;font-weight:400;font-size:clamp(28px,7vw,40px);line-height:1.15;color:var(--gold2)}
+.desc{margin:0 0 1.2em;font-style:italic;font-size:18px}
+.q{margin:0 0 .8em;padding-left:12px;border-left:3px solid var(--gold);font-size:19px;font-weight:700;color:var(--gold2)}
+.ops{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:center;width:100%;min-height:56px;padding:12px 14px;text-align:left;font:inherit;font-size:17px;color:var(--cream);background:#ffffff0d;border:1px solid #d4af6a55;border-radius:12px;cursor:pointer;transition:transform .2s,background .3s,border-color .3s,opacity .4s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.opt b{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:1px solid var(--gold);color:var(--gold);font-size:14px}
+.opt:hover{background:#d4af6a22;transform:translateX(3px)}
+.opt.sel{background:#d4af6a33;border-color:var(--gold2);box-shadow:0 0 24px #d4af6a44}
+.opt.sel b{background:var(--gold);color:#2a0a14}
+.done .opt{pointer-events:none}.done .opt:not(.sel){opacity:.4}
+.rx{display:none;margin-top:16px;padding:14px 16px;border:1px solid #d4af6a55;border-radius:12px;background:#0007;font-style:italic}
+.rx.on{display:block;animation:fi .6s}
+.rx::before{content:"Реакция зала ✦";display:block;margin-bottom:4px;font-style:normal;font-size:13px;letter-spacing:.12em;color:var(--gold)}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}}
+.big{font-size:76px;line-height:1.1;filter:drop-shadow(0 0 20px #d4af6a88)}
+.trait{margin:0 0 .8em;color:var(--gold);font-style:italic}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:1em}
+.chip{padding:4px 12px;border:1px solid #d4af6a55;border-radius:999px;font-size:15px}
+.chip.w{background:#d4af6a33;border-color:var(--gold2)}
+.rec{margin-top:1em;padding:14px 16px;text-align:left;border:1px solid #d4af6a55;border-radius:12px;background:#0007}
+.rec b{color:var(--gold)}.rec p{margin:.4em 0 0}
+label{display:block;margin:1.2em 0 .5em;font-weight:700;color:var(--gold2)}
+textarea{width:100%;padding:12px 14px;font:inherit;font-size:16px;color:var(--cream);background:#0007;border:1px solid var(--gold);border-radius:12px;resize:vertical}
+textarea::placeholder{color:#f6ecd699}
+.qr{max-width:190px;margin:22px auto 0;font-size:14px;color:var(--gold)}
+.qr:empty{display:none}
+.qr svg{display:block;width:100%;height:auto;margin-bottom:8px;padding:8px;border-radius:10px;background:#fff}
+#fx{position:fixed;inset:0;z-index:6;pointer-events:none;overflow:hidden}
+.fx{position:absolute;inset:0}
+.film{background:linear-gradient(90deg,#0c0508,#2a1810 50%,#0c0508)}
+.film::before,.film::after{content:"";position:absolute;left:0;right:0;height:20px;background:repeating-linear-gradient(90deg,transparent 0 16px,#f6ecd6 16px 30px)}
+.film::before{top:12px}.film::after{bottom:12px}
+.iris{inset:auto;left:50%;top:50%;width:0;height:0;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 40px 6px #f3dca066,0 0 0 200vmax #050208}
+.bar{inset:auto;left:0;right:0;height:11.3%;background:linear-gradient(90deg,#3a0816,#7a1a38 50%,#3a0816);border-block:1px solid var(--gold)}
+.flash{background:radial-gradient(circle,#fffbe8 0,#f3dca0 22%,#c9953a 48%,#4a0b1f 78%,#12040a)}
+.dia{background:linear-gradient(135deg,#1a0a24,#5a0f23 50%,#d4af6a)}
+.drop{background:repeating-linear-gradient(90deg,#3a0816 0,#6d1530 26px,#4a0b1f 52px,#2a0510 70px);border-bottom:8px solid var(--gold);box-shadow:0 12px 40px #000}
+.dark{background:radial-gradient(ellipse at 50% 40%,#1b0a26,#000 75%)}
+:focus-visible{outline:2px solid var(--gold2);outline-offset:3px}
+#gate{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:24px;background:#0b0610 linear-gradient(#1f0b2b,#0b0610 80%)}
+#gate form{width:100%;max-width:360px;padding:30px 22px;text-align:center;border:1px solid #d4af6a66;border-radius:18px;background:linear-gradient(160deg,#5a0f23d9,#25103ae6);box-shadow:0 20px 60px #000a}
+#gate input{width:100%;margin-top:14px;padding:14px;font:inherit;font-size:22px;letter-spacing:.4em;text-align:center;color:var(--cream);background:#0007;border:1px solid var(--gold);border-radius:12px}
+#gate .err{min-height:1.4em;margin:.6em 0 0;color:#ffb3b3;font-size:15px}
+#gate .btn{width:100%}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<div id="gate"><form id="gf" autocomplete="off">
+ <p class="ch">★ ТЕАТР ВПЕЧАТЛЕНИЙ ★</p>
+ <h2>Вход по паролю</h2>
+ <p style="margin:0;font-style:italic">Введите пароль, чтобы пройти в зал</p>
+ <input id="gp" type="password" inputmode="numeric" maxlength="10" aria-label="Пароль" autofocus>
+ <p class="err" id="ge" aria-live="polite"></p>
+ <button class="btn" type="submit">ВОЙТИ →</button>
+</form></div>
+<script>
+(function(){
+ const g=document.getElementById('gate'),ok=()=>g.remove();
+ try{if(sessionStorage.getItem('zk_ok')==='1'){ok();return}}catch(e){}
+ document.getElementById('gf').addEventListener('submit',e=>{
+  e.preventDefault();const p=document.getElementById('gp');
+  if(p.value.trim()==='1221'){try{sessionStorage.setItem('zk_ok','1')}catch(e){}ok()}
+  else{document.getElementById('ge').textContent='Неверный пароль';p.value='';p.focus()}
+ });
+})();
+</script>
+<div class="spot"></div><div class="cur l"></div><div class="cur r"></div><div id="fx"></div>
+
+<section id="s-ticket" class="scr on in">
+ <div class="ticket">
+  <div class="main">
+   <p class="eyebrow">★ ТЕАТР ВПЕЧАТЛЕНИЙ ★</p>
+   <h1>ЗА КАДРОМ</h1>
+   <p class="tag">Измени свою историю.</p>
+   <blockquote>
+    <p>«Это ваш билет в мир, где вы — не просто зритель. Здесь каждая сцена открывает новую историю, каждый выбор меняет сюжет, а главная роль принадлежит вам.</p>
+    <p>С помощью этого билета вы можете войти за кулисы и пройти пять испытаний, чтобы увидеть привычные вещи под другим углом».</p>
+   </blockquote>
+   <dl class="info">
+    <dt>Событие:</dt><dd>Персональное развитие</dd>
+    <dt>Место:</dt><dd>Ваша собственная история</dd>
+    <dt>Дресс-код:</dt><dd>Любопытство</dd>
+    <dt>Номер билета:</dt><dd>001</dd>
+    <dt>Приглашение:</dt><dd>2026</dd>
+   </dl>
+  </div>
+  <div class="stub"><span>🎭</span><b>№ 001</b><span>ОДИН ВХОД</span></div>
+ </div>
+ <button id="enter" class="btn" type="button">ПРЕДЪЯВИТЬ БИЛЕТ И ВОЙТИ →</button>
+</section>
+
+<section id="s-scene" class="scr">
+ <div class="prog"><div class="bar" id="bar"></div><span id="pl"></span></div>
+ <div class="card">
+  <p class="ch" id="ch"></p>
+  <h2 id="tt"></h2>
+  <p class="desc" id="ds"></p>
+  <p class="q" id="q"></p>
+  <div class="ops" id="ops"></div>
+  <div class="rx" id="rx" aria-live="polite"></div>
+  <button id="nx" class="btn" type="button" hidden></button>
+ </div>
+</section>
+
+<section id="s-result" class="scr">
+ <div class="card c">
+  <p class="ch">Твоя роль определена</p>
+  <div class="big" id="ri"></div>
+  <h2 id="rn"></h2>
+  <p class="trait" id="rt"></p>
+  <div class="chips" id="rc"></div>
+  <p id="rd"></p>
+  <div class="rec"><b>Как развивать это качество</b><p id="rr"></p></div>
+  <button id="toFinal" class="btn" type="button">К ФИНАЛЬНОЙ СЦЕНЕ →</button>
+ </div>
+</section>
+
+<section id="s-final" class="scr">
+ <div class="card c">
+  <p class="ch">Занавес опускается</p>
+  <h2>Финальная сцена</h2>
+  <p>Поздравляем! Ты прошёл все пять испытаний: побывал на сцене, в кинозале, на репетиции и в монтажной, а в финале встретился с режиссёром. Привычные ситуации теперь выглядят иначе. Главная роль снова за тобой.</p>
+  <label for="rf">Какое качество ты хочешь развивать после этого квеста?</label>
+  <textarea id="rf" rows="4" maxlength="500" placeholder="Напиши свою мысль…"></textarea>
+  <div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41 41" shape-rendering="crispEdges" role="img" aria-label="QR-код"><path d="M4 4h7v1h-7zM13 4h1v1h-1zM15 4h1v1h-1zM18 4h1v1h-1zM20 4h1v1h-1zM22 4h4v1h-4zM27 4h1v1h-1zM30 4h7v1h-7zM4 5h1v1h-1zM10 5h1v1h-1zM19 5h2v1h-2zM22 5h1v1h-1zM26 5h1v1h-1zM28 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM4 6h1v1h-1zM6 6h3v1h-3zM10 6h1v1h-1zM12 6h2v1h-2zM15 6h2v1h-2zM18 6h3v1h-3zM24 6h2v1h-2zM30 6h1v1h-1zM32 6h3v1h-3zM36 6h1v1h-1zM4 7h1v1h-1zM6 7h3v1h-3zM10 7h1v1h-1zM12 7h1v1h-1zM19 7h1v1h-1zM22 7h1v1h-1zM26 7h1v1h-1zM28 7h1v1h-1zM30 7h1v1h-1zM32 7h3v1h-3zM36 7h1v1h-1zM4 8h1v1h-1zM6 8h3v1h-3zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM17 8h5v1h-5zM24 8h2v1h-2zM30 8h1v1h-1zM32 8h3v1h-3zM36 8h1v1h-1zM4 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM17 9h1v1h-1zM22 9h2v1h-2zM25 9h2v1h-2zM30 9h1v1h-1zM36 9h1v1h-1zM4 10h7v1h-7zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM22 10h1v1h-1zM24 10h1v1h-1zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h7v1h-7zM12 11h1v1h-1zM14 11h2v1h-2zM20 11h1v1h-1zM23 11h4v1h-4zM4 12h1v1h-1zM6 12h5v1h-5zM15 12h2v1h-2zM18 12h1v1h-1zM20 12h2v1h-2zM23 12h2v1h-2zM27 12h2v1h-2zM30 12h5v1h-5zM4 13h5v1h-5zM11 13h5v1h-5zM17 13h8v1h-8zM27 13h1v1h-1zM30 13h2v1h-2zM33 13h4v1h-4zM4 14h1v1h-1zM9 14h3v1h-3zM14 14h2v1h-2zM17 14h3v1h-3zM21 14h1v1h-1zM25 14h1v1h-1zM32 14h1v1h-1zM34 14h2v1h-2zM4 15h1v1h-1zM6 15h2v1h-2zM9 15h1v1h-1zM11 15h3v1h-3zM17 15h1v1h-1zM19 15h5v1h-5zM25 15h1v1h-1zM29 15h1v1h-1zM32 15h4v1h-4zM4 16h2v1h-2zM8 16h4v1h-4zM13 16h1v1h-1zM15 16h2v1h-2zM18 16h1v1h-1zM20 16h1v1h-1zM24 16h1v1h-1zM26 16h1v1h-1zM28 16h2v1h-2zM32 16h2v1h-2zM36 16h1v1h-1zM4 17h2v1h-2zM7 17h3v1h-3zM15 17h2v1h-2zM19 17h1v1h-1zM22 17h1v1h-1zM26 17h1v1h-1zM29 17h3v1h-3zM33 17h4v1h-4zM5 18h1v1h-1zM8 18h5v1h-5zM14 18h1v1h-1zM16 18h6v1h-6zM24 18h1v1h-1zM26 18h1v1h-1zM28 18h3v1h-3zM32 18h4v1h-4zM5 19h4v1h-4zM11 19h4v1h-4zM16 19h4v1h-4zM22 19h1v1h-1zM25 19h1v1h-1zM28 19h4v1h-4zM33 19h2v1h-2zM4 20h1v1h-1zM7 20h1v1h-1zM9 20h3v1h-3zM14 20h1v1h-1zM17 20h3v1h-3zM21 20h1v1h-1zM24 20h1v1h-1zM26 20h1v1h-1zM29 20h1v1h-1zM31 20h2v1h-2zM34 20h1v1h-1zM36 20h1v1h-1zM5 21h3v1h-3zM13 21h2v1h-2zM16 21h1v1h-1zM19 21h2v1h-2zM22 21h4v1h-4zM27 21h1v1h-1zM30 21h2v1h-2zM33 21h3v1h-3zM4 22h5v1h-5zM10 22h1v1h-1zM12 22h1v1h-1zM16 22h1v1h-1zM19 22h2v1h-2zM22 22h1v1h-1zM24 22h3v1h-3zM29 22h1v1h-1zM31 22h2v1h-2zM34 22h2v1h-2zM5 23h1v1h-1zM9 23h1v1h-1zM20 23h1v1h-1zM25 23h1v1h-1zM28 23h1v1h-1zM30 23h5v1h-5zM7 24h4v1h-4zM13 24h6v1h-6zM22 24h1v1h-1zM25 24h2v1h-2zM29 24h1v1h-1zM31 24h3v1h-3zM35 24h2v1h-2zM4 25h2v1h-2zM8 25h2v1h-2zM11 25h5v1h-5zM19 25h2v1h-2zM24 25h2v1h-2zM27 25h1v1h-1zM30 25h1v1h-1zM36 25h1v1h-1zM4 26h1v1h-1zM8 26h1v1h-1zM10 26h2v1h-2zM13 26h2v1h-2zM16 26h1v1h-1zM22 26h2v1h-2zM25 26h1v1h-1zM32 26h2v1h-2zM35 26h1v1h-1zM4 27h1v1h-1zM6 27h1v1h-1zM8 27h2v1h-2zM12 27h1v1h-1zM18 27h1v1h-1zM20 27h1v1h-1zM23 27h4v1h-4zM28 27h5v1h-5zM34 27h2v1h-2zM4 28h1v1h-1zM6 28h1v1h-1zM9 28h2v1h-2zM12 28h1v1h-1zM16 28h1v1h-1zM18 28h1v1h-1zM21 28h1v1h-1zM23 28h1v1h-1zM26 28h8v1h-8zM12 29h6v1h-6zM21 29h5v1h-5zM28 29h1v1h-1zM32 29h1v1h-1zM34 29h1v1h-1zM4 30h7v1h-7zM14 30h1v1h-1zM16 30h1v1h-1zM19 30h1v1h-1zM21 30h1v1h-1zM24 30h1v1h-1zM27 30h2v1h-2zM30 30h1v1h-1zM32 30h1v1h-1zM34 30h2v1h-2zM4 31h1v1h-1zM10 31h1v1h-1zM12 31h1v1h-1zM14 31h1v1h-1zM17 31h9v1h-9zM27 31h2v1h-2zM32 31h3v1h-3zM4 32h1v1h-1zM6 32h3v1h-3zM10 32h1v1h-1zM12 32h2v1h-2zM15 32h2v1h-2zM19 32h2v1h-2zM23 32h1v1h-1zM25 32h2v1h-2zM28 32h6v1h-6zM4 33h1v1h-1zM6 33h3v1h-3zM10 33h1v1h-1zM12 33h2v1h-2zM16 33h1v1h-1zM18 33h2v1h-2zM22 33h1v1h-1zM28 33h2v1h-2zM32 33h5v1h-5zM4 34h1v1h-1zM6 34h3v1h-3zM10 34h1v1h-1zM12 34h1v1h-1zM14 34h2v1h-2zM19 34h4v1h-4zM24 34h2v1h-2zM27 34h1v1h-1zM30 34h2v1h-2zM4 35h1v1h-1zM10 35h1v1h-1zM13 35h2v1h-2zM16 35h2v1h-2zM19 35h1v1h-1zM23 35h1v1h-1zM25 35h2v1h-2zM29 35h1v1h-1zM32 35h3v1h-3zM4 36h7v1h-7zM12 36h2v1h-2zM17 36h5v1h-5zM27 36h3v1h-3zM31 36h1v1h-1zM34 36h2v1h-2z" fill="#2a0a14"/></svg>Отсканируй и пройди квест сам</div>
+  <button id="back" class="btn" type="button">ВЕРНУТЬСЯ К БИЛЕТУ</button>
+ </div>
+</section>
+
+<script>
+const R=['I','II','III','IV','V'];
+// o: [текст, тип (0 эмпатия, 1 герой, 2 наблюдатель, 3 режиссёр), реакция]
+const SC=[
+{l:'Театральная сцена',t:'Маска эмоций',d:'Актёр уверяет, что всё хорошо, но плечи напряжены, а в разговоре он почти не участвует. Софиты делают тишину громче.',q:'Как ты поступишь?',o:[
+['Оставлю его в покое.',2,'Ты замечаешь сигналы и уважаешь границы. Дай понять, что ты рядом.'],
+['Спокойно спрошу, хочет ли он поговорить.',0,'Ты даёшь выбор, а не давишь. С такого вопроса начинается доверие.'],
+['Попробую разрядить обстановку шуткой.',3,'Лёгкость снимает напряжение, если она бережна. Смех — тоже язык сцены.'],
+['Предложу вместе подумать, что делать дальше.',1,'Ты берёшь инициативу и не оставляешь человека одного.']]},
+{l:'Кинозал',t:'Чужая история',d:'На экране герой нарушает обещание другу, чтобы защитить другого человека. В зале тихо: правильного ответа нет, есть цена выбора.',q:'Как лучше оценить поступок героя?',o:[
+['Осудить его.',1,'Ты держишься принципов: слово должно что-то значить. Но строгость честнее, когда знаешь всю историю.'],
+['Попытаться понять мотивы и последствия.',2,'Ты сначала разбираешь причины и итоги. Так видна вся картина, а не один кадр.'],
+['Посмотреть на ситуацию глазами обоих друзей.',0,'Ты примеряешь две роли сразу: чувствуешь обиду одного и страх другого.'],
+['Придумать третий вариант решения.',3,'Ты не выбираешь между «плохо» и «ещё хуже». Иногда новый выход спасает всех.']]},
+{l:'Репетиция',t:'Сцена без сценария',d:'Спектакль идёт при полном зале. Партнёр вдруг замолкает: реплика вылетела из головы. Пауза растягивается, зал замирает.',q:'Что поможет продолжить спектакль?',o:[
+['Импровизировать.',3,'Сцена без сценария — твоя стихия. Находчивость превращает сбой в живой момент.'],
+['Помочь партнёру вспомнить реплику.',0,'Ты думаешь о партнёре раньше, чем о себе. Такая поддержка дороже любой реплики.'],
+['Сохранить спокойствие.',1,'Твоё спокойствие заразительно: пока ты держишь ритм, остальные не теряют опору.'],
+['Оценить ситуацию и продолжить.',2,'Ты быстро считываешь обстановку и выбираешь точный ход без суеты.']]},
+{l:'Монтажная',t:'Измени сценарий',d:'Герои фильма поссорились из-за недопонимания, и плёнка идёт к грустному финалу. Монтажный стол в твоих руках.',q:'Какую развязку ты предложишь?',o:[
+['Герои разговаривают и понимают друг друга.',0,'Честный разговор — самая сильная сцена. Ты веришь, что слова проясняют чувства.'],
+['Один признаёт ошибку.',1,'Сделать первый шаг — значит взять ответственность. Для этого нужна смелость.'],
+['Открывается новая деталь.',2,'Одна упущенная мелочь меняет смысл сцены. Ты умеешь замечать то, что другие пропускают.'],
+['История получает неожиданный поворот.',3,'Ты не боишься переписать правила: смелый поворот делает конфликт началом новой истории.']]},
+{l:'Главная сцена',t:'Твоя главная роль',d:'Зал пуст, горит одна лампа. Режиссёр садится на край сцены и смотрит прямо на тебя. Репетиции окончены, наступает твой выход.',q:'Какое качество ты хочешь взять с собой из этого театра в обычную жизнь?',o:[
+['Лучше понимать чувства других людей.',0,'С этим качеством любая роль становится живой. Люди тянутся к тому, кто слышит.'],
+['Уверенно выражать позицию и действовать.',1,'Роль героя начинается с решения. Смелость — это шаг вопреки страху.'],
+['Анализировать ситуации и проверять информацию.',2,'Факты и внимание к деталям защищают от иллюзий и помогают решать верно.'],
+['Находить нестандартные решения.',3,'Воображение — редчайший реквизит. С ним у любой истории появляется второй акт.']]}
+];
+const T=[
+{i:'❤️',n:'Человек, который понимает',k:'Эмпатия · умение видеть чужую точку зрения',d:'Ты чувствуешь настроение комнаты раньше, чем прозвучит слово. Умеешь слушать и поддержать так, что рядом с тобой люди перестают играть и становятся собой.',r:'После важного разговора спрашивай себя: что человек на самом деле чувствовал? Задавай открытые вопросы и не торопись с советами. Береги и свои границы.'},
+{i:'🔥',n:'Главный герой',k:'Смелость · инициативность · ответственность',d:'Когда наступает пауза, ты делаешь шаг вперёд. Не ждёшь идеального момента, берёшь решение на себя и готов отвечать за последствия.',r:'Раз в неделю берись за дело, которое давно откладываешь. Перед решением выслушай других: сильный герой ведёт за собой, а не вместо других.'},
+{i:'👁️',n:'Внимательный наблюдатель',k:'Аналитика · внимательность · умение замечать детали',d:'Ты видишь то, что остаётся за кадром: интонацию, паузу, деталь в углу сцены. Не спешишь с выводами, проверяешь факты и редко ошибаешься в главном.',r:'Записывай каждый день три замеченные детали и одно «почему». Проверяй важное минимум в двух источниках. И иногда доверяй интуиции.'},
+{i:'✨',n:'Режиссёр своей истории',k:'Креативность · воображение · нестандартное мышление',d:'Ты спрашиваешь «а что, если иначе?». Тупик для тебя — повод придумать новый ход, и именно так рождаются самые необычные решения.',r:'К любой задаче придумывай три решения, прежде чем выбрать одно. Веди блокнот идей и доводи хотя бы одну до конца: режиссёр снимает фильм, а не только мечтает.'}
+];
+const $=id=>document.getElementById(id);
+let idx=0,picks=[],lock=false,busy=false;
+
+function show(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on','in'));
+  const e=$(id);e.classList.add('on');void e.offsetWidth;e.classList.add('in');
+}
+// у каждого перехода свой эффект, повторов нет
+const W=ms=>new Promise(r=>setTimeout(r,ms));
+const mk=c=>{const e=document.createElement('div');e.className='fx '+c;$('fx').appendChild(e);return e};
+const A=(e,kf,d,ez,dl)=>e.animate(kf,{duration:d,easing:ez||'ease-in-out',delay:dl||0,fill:'both'}).finished;
+const EZ='cubic-bezier(.7,0,.3,1)';
+const FX=[
+ // 0 вход в зал: бархатный занавес
+ async m=>{const b=document.body.classList;b.add('shut');await W(750);m();b.remove('shut');await W(700)},
+ // 1 кинолента проезжает через экран
+ async m=>{const e=mk('film');await A(e,[{transform:'translateX(-105%)'},{transform:'none'}],650,EZ);m();await A(e,[{transform:'none'},{transform:'translateX(105%)'}],650,EZ)},
+ // 2 луч прожектора: ирис сужается и раскрывается
+ async m=>{const e=mk('iris'),a={width:'260vmax',height:'260vmax'},z={width:'0px',height:'0px'};await A(e,[a,z],800,'ease-in');m();await A(e,[z,a],800,'ease-out')},
+ // 3 монтажные склейки: полосы влетают по очереди
+ async m=>{const bs=[...Array(9)].map((_,i)=>{const b=mk('bar');b.style.top=i*11.12+'%';return b});
+  await Promise.all(bs.map((b,i)=>A(b,[{transform:'translateX('+(i%2?'':'-')+'105%)'},{transform:'none'}],420,'ease-out',i*50)));m();
+  await Promise.all(bs.map((b,i)=>A(b,[{transform:'none'},{transform:'translateX('+(i%2?'-':'')+'105%)'}],420,'ease-in',i*50)))},
+ // 4 золотая вспышка
+ async m=>{const e=mk('flash');await A(e,[{opacity:0,transform:'scale(.3)'},{opacity:1,transform:'scale(1.5)'}],600,'ease-in');m();await A(e,[{opacity:1,transform:'scale(1.5)'},{opacity:0,transform:'scale(3)'}],900,'ease-out')},
+ // 5 ромб раскрывается из центра
+ async m=>{const e=mk('dia'),c='polygon(50% 50%,50% 50%,50% 50%,50% 50%)',f='polygon(50% -60%,160% 50%,50% 160%,-60% 50%)';await A(e,[{clipPath:c},{clipPath:f}],750);m();await A(e,[{clipPath:f},{clipPath:c}],750)},
+ // 6 тяжёлый занавес падает сверху
+ async m=>{const e=mk('drop'),u={transform:'translateY(-112%)'},n={transform:'none'};await A(e,[u,n],800,'cubic-bezier(.6,0,.35,1)');await W(250);m();await A(e,[n,u],900,'cubic-bezier(.6,0,.35,1)')},
+ // 7 свет гаснет и снова загорается
+ async m=>{const e=mk('dark');await A(e,[{opacity:0},{opacity:1}],700,'ease-in');m();await W(250);await A(e,[{opacity:1},{opacity:0}],900,'ease-out')}
+];
+function go(fn,k){
+  if(busy)return;busy=true;let d=0;
+  const mid=()=>{if(d++)return;try{fn();window.scrollTo(0,0)}catch(e){console.error(e)}};
+  const end=()=>{mid();busy=false;$('fx').textContent='';document.body.classList.remove('shut')};
+  const t=setTimeout(end,4500);
+  const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  Promise.resolve().then(()=>rm?0:FX[k](mid)).catch(()=>{}).then(()=>{clearTimeout(t);end()});
+}
+function paint(done){
+  [...$('bar').children].forEach((el,k)=>{el.className=(k<idx||(k===idx&&done))?'d':(k===idx?'c':'')});
+}
+function render(){
+  const S=SC[idx],ops=$('ops');lock=false;
+  $('ch').textContent='Глава '+R[idx]+' · Испытание №'+(idx+1)+' · '+S.l;
+  $('tt').textContent=S.t;$('ds').textContent=S.d;$('q').textContent=S.q;
+  $('pl').textContent=(idx+1)+' из 5';
+  ops.className='ops';ops.textContent='';
+  $('rx').className='rx';$('nx').hidden=true;
+  S.o.forEach((o,k)=>{
+    const b=document.createElement('button');b.type='button';b.className='opt';
+    b.innerHTML='<b>'+'АБВГ'[k]+'</b><span></span>';b.lastChild.textContent=o[0];
+    b.addEventListener('click',()=>pick(k,b));ops.appendChild(b);
+  });
+  paint(false);show('s-scene');
+}
+function pick(k,b){
+  if(lock)return;lock=true;
+  const o=SC[idx].o[k];picks[idx]=o[1];
+  $('ops').classList.add('done');b.classList.add('sel');
+  $('rx').textContent=o[2];$('rx').classList.add('on');
+  $('nx').textContent=idx<4?'К СЛЕДУЮЩЕЙ СЦЕНЕ →':'УЗНАТЬ РЕЗУЛЬТАТ →';
+  $('nx').hidden=false;paint(true);
+  setTimeout(()=>$('nx').scrollIntoView({behavior:'smooth',block:'nearest'}),120);
+}
+// побеждает тип с максимумом; при ничьей — тип последнего выбранного ответа среди лидеров
+function result(){
+  const c=[0,0,0,0];picks.forEach(t=>c[t]++);
+  const m=Math.max(...c);let w=0;
+  for(let i=picks.length-1;i>=0;i--){if(c[picks[i]]===m){w=picks[i];break}}
+  const t=T[w];
+  $('ri').textContent=t.i;$('rn').textContent=t.n;$('rt').textContent=t.k;
+  $('rd').textContent=t.d;$('rr').textContent=t.r;
+  $('rc').innerHTML=T.map((x,i)=>'<span class="chip'+(i===w?' w':'')+'">'+x.i+' '+c[i]+'</span>').join('');
+  show('s-result');
+}
+$('bar').innerHTML='<i></i><i></i><i></i><i></i><i></i>';
+$('enter').addEventListener('click',()=>go(()=>{idx=0;picks=[];render()},0));
+$('nx').addEventListener('click',()=>{if(!lock)return;go(()=>{if(idx<4){idx++;render()}else result()},idx+1)});
+$('toFinal').addEventListener('click',()=>go(()=>show('s-final'),6));
+$('back').addEventListener('click',()=>go(()=>{idx=0;picks=[];lock=false;$('rf').value='';show('s-ticket')},7));
+</script>
+</body>
+</html>
