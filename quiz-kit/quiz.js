@@ -34,8 +34,10 @@
   document.body.insertAdjacentHTML("afterbegin",
     '<header class="top"><div class="hin"><img src="' + KIT + 'logo.png" alt=""><div class="t"><b>' + esc(Z.subject) + '</b><span>' + ORG + '</span></div>' +
     (Z.catalog ? '<a class="ib" href="' + esc(Z.catalog) + '" title="Все тесты" aria-label="Все тесты">' + ic("home") + "</a>" : "") +
+    (Z.slides ? '<button class="ib" id="hsl" type="button" title="Презентация" aria-label="Презентация">' + ic("slides") + "</button>" : "") +
     '<button class="ib" id="thm" type="button" title="Тема" aria-label="Сменить тему"></button></div></header>');
   setTheme(document.documentElement.dataset.theme);
+  if (Z.slides) $("#hsl").onclick = () => slides(0);
   $("#thm").onclick = () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
   const view = (html) => { app.innerHTML = '<div class="view">' + html + "</div>"; window.scrollTo(0, 0); };
 
@@ -57,16 +59,20 @@
       '<div class="chips"><span class="chip">' + ic("list") + N + ' вопросов</span><span class="chip">' + ic("watch") + Z.minutes + ' мин в экзамене</span><span class="chip">' + ic("target") + "Проходной балл " + PASS + '%</span><span class="chip">' + ic("cert") + "Сертификат</span></div>" +
       '<h3 style="margin-top:20px">Что проверяет тест</h3><ul class="topics">' + Z.topics.map((t) => "<li>" + esc(t) + "</li>").join("") + "</ul>" +
       (hist.best !== null ? '<div class="best">Ваш лучший результат: <b>' + hist.best + " из " + N + "</b> · попыток: " + hist.n + "</div>" : "") +
-      '</div><div class="card"><h2>Начать</h2>' +
+      '</div><div>' + (Z.slides ? '<div class="card pres"><button type="button" class="pthumb" id="pth" aria-label="Открыть презентацию"><img src="' + slideSrc(0) + '" alt="Первый слайд презентации" loading="lazy"><span class="pplay">' + ic("play") + '</span></button>' +
+      '<div class="pinfo"><span class="eyebrow">' + ic("slides") + ' Перед тестом</span><h3>Презентация к теме</h3><p class="lead" style="margin:0 0 12px">' + Z.slides.n + ' слайдов. Повторите материал, а потом проверьте себя.</p>' +
+      '<div class="row"><button class="btn sm" type="button" id="pop">' + ic("play") + 'Смотреть</button>' + (Z.slides.pptx ? '<a class="btn sm ghost" href="' + esc(Z.slides.pptx) + '" download>' + ic("ppt") + 'PPTX</a>' : "") + '</div></div></div>' : "") +
+      '<div class="card"><h2>Начать</h2>' +
       '<div class="modes" role="radiogroup" aria-label="Режим">' +
       '<label class="mode"><input type="radio" name="md" value="learn" checked><span class="ic">' + ic("idea") + '</span><span><b>Обучение</b><small>Ответ и объяснение сразу после выбора, без таймера</small></span></label>' +
       '<label class="mode"><input type="radio" name="md" value="exam"><span class="ic">' + ic("clock") + "</span><span><b>Экзамен</b><small>Таймер " + Z.minutes + " мин, переход между вопросами, итог в конце</small></span></label></div>" +
       '<form id="sf" novalidate><label class="l" for="nm">Фамилия и имя</label><input class="in" id="nm" maxlength="60" autocomplete="name" placeholder="Например, Каримова Малика" value="' + esc(person.name) + '">' +
       '<label class="l" for="em">E-mail <small>— необязательно, для сертификата</small></label><input class="in" id="em" type="email" maxlength="80" autocomplete="email" placeholder="name@mail.uz" value="' + esc(person.email) + '">' +
       '<p class="err" id="se" aria-live="polite"></p><button class="btn w" type="submit">Начать тест ' + ic("right") + "</button></form>" +
-      '<p class="hint">Клавиши: <kbd>1</kbd>–<kbd>4</kbd> выбор ответа, <kbd>Enter</kbd> дальше, <kbd>←</kbd> <kbd>→</kbd> навигация в экзамене.</p></div></div>' +
+      '<p class="hint">Клавиши: <kbd>1</kbd>–<kbd>4</kbd> выбор ответа, <kbd>Enter</kbd> дальше, <kbd>←</kbd> <kbd>→</kbd> навигация в экзамене.</p></div></div></div>' +
       "<footer>" + esc(Z.source || "") + "</footer>"
     );
+    if (Z.slides) { $("#pth").onclick = () => slides(0); $("#pop").onclick = () => slides(0); }
     $("#sf").onsubmit = (e) => {
       e.preventDefault();
       const nm = $("#nm").value.trim().replace(/\s+/g, " "), em = $("#em").value.trim();
@@ -169,7 +175,7 @@
 
   // ---------- клавиатура ----------
   document.addEventListener("keydown", (e) => {
-    if (!S || S.done || $(".modal") || /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+    if (!S || S.done || $(".modal") || $(".sv") || /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
     const n = "1234".indexOf(e.key);
     if (n >= 0) { const b = document.querySelectorAll("#ops .opt")[n]; if (b) b.click(); }
     else if (e.key === "Enter") { const b = $("#nx") || $("#fin"); if (b) { e.preventDefault(); b.click(); } }
@@ -405,6 +411,46 @@
     const cv = await drawCert(c);
     $("#cv1").innerHTML = '<img class="certimg" alt="Сертификат" src="' + cv.toDataURL("image/jpeg", 0.9) + '"><div class="row" style="margin-top:12px"><button class="btn" type="button" id="d1">' + ic("img") + "Скачать PNG</button></div>";
     $("#d1").onclick = async () => save(await toBlob(cv, "image/png"), fileBase(c) + ".png");
+  }
+
+
+  // ---------- презентация ----------
+  function slideSrc(i) { return "slides/s-" + String(i + 1).padStart(2, "0") + ".jpg"; }
+  function slides(from) {
+    if ($(".sv")) return;
+    const n = Z.slides.n; let i = from || 0;
+    const v = document.createElement("div"); v.className = "sv"; v.setAttribute("role", "dialog"); v.setAttribute("aria-modal", "true"); v.setAttribute("aria-label", "Презентация");
+    v.innerHTML = '<div class="svtop"><b>' + esc(Z.title) + '</b><span id="svc"></span>' +
+      (Z.slides.pptx ? '<a class="ib" href="' + esc(Z.slides.pptx) + '" download title="Скачать PPTX" aria-label="Скачать PPTX">' + ic("dl") + "</a>" : "") +
+      '<button class="ib" type="button" id="svx" title="Закрыть" aria-label="Закрыть">' + ic("close") + '</button></div>' +
+      '<div class="svstage"><button class="svnav l" type="button" id="svp" aria-label="Предыдущий слайд">' + ic("left") + '</button><img id="svi" alt=""><button class="svnav r" type="button" id="svn" aria-label="Следующий слайд">' + ic("right") + "</button></div>" +
+      '<div class="svbottom"><div class="svthumbs">' + [...Array(n)].map((_, k) => '<button type="button" data-k="' + k + '" aria-label="Слайд ' + (k + 1) + '"><img src="' + slideSrc(k) + '" alt="" loading="lazy"></button>').join("") + "</div>" +
+      '<button class="btn gold sm" type="button" id="svgo">Перейти к тесту ' + ic("right") + "</button></div>";
+    document.body.appendChild(v); document.body.style.overflow = "hidden";
+    const img = $("#svi", v), th = v.querySelectorAll(".svthumbs button");
+    const show = (k) => {
+      i = Math.max(0, Math.min(n - 1, k));
+      img.src = slideSrc(i); img.alt = "Слайд " + (i + 1) + " из " + n;
+      $("#svc", v).textContent = (i + 1) + " / " + n;
+      $("#svp", v).disabled = i === 0; $("#svn", v).disabled = i === n - 1;
+      th.forEach((b, k2) => b.classList.toggle("on", k2 === i));
+      th[i].scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+      [i - 1, i + 1].forEach((k2) => { if (k2 >= 0 && k2 < n) new Image().src = slideSrc(k2); });
+      $("#svgo", v).classList.toggle("pulse", i === n - 1);
+    };
+    const close = () => { v.remove(); document.body.style.overflow = ""; document.removeEventListener("keydown", key); };
+    const key = (e) => { if (e.key === "Escape") close(); else if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); show(i + 1); } else if (e.key === "ArrowLeft") show(i - 1); };
+    document.addEventListener("keydown", key);
+    $("#svx", v).onclick = close;
+    $("#svp", v).onclick = () => show(i - 1);
+    $("#svn", v).onclick = () => show(i + 1);
+    th.forEach((b) => (b.onclick = () => show(+b.dataset.k)));
+    $("#svgo", v).onclick = () => { close(); if (!S || S.done) { start(); setTimeout(() => { const f = $("#nm"); f && f.focus(); }, 50); } };
+    let x0 = null;
+    img.addEventListener("touchstart", (e) => (x0 = e.touches[0].clientX), { passive: true });
+    img.addEventListener("touchend", (e) => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1)); x0 = null; });
+    img.onclick = (e) => { const r = img.getBoundingClientRect(); show(i + (e.clientX - r.left > r.width / 2 ? 1 : -1)); };
+    show(i); $("#svx", v).focus();
   }
 
   // ---------- запуск ----------
